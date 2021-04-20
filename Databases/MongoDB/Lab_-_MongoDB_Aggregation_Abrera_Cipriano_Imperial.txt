@@ -1,0 +1,53 @@
+// Lab: MongoDB Aggregation //
+Abrera
+Cipriano
+Imperial
+
+
+// #1
+db.posts.aggregate([
+	{$project: { _id: 0, tags: 1 } },
+	{$unwind: "$tags" },
+	{$group: { _id: "$tags", "num_tags": { $sum: 1 } }},
+	{$project: { _id: 0, tags: "$_id", num_tags: 1 } },
+	{$sort: { num_tags: -1 } },
+	{$limit : 1 }
+]).pretty()
+
+// #2
+db.inspections.aggregate([
+	{$match: { result: { $in: [ "Fail" ] } } },
+	{$project: { _id: 0, address: 1 } },
+	{$unwind: "$address" },
+	{$group: { _id: "$address.zip", "num_fails_zip": { $sum: 1 } }},
+	{$project: { _id: 0, zip: "$_id", num_fails_zip: 1 } },
+	{$sort: { num_fails_zip: 1 } },
+]).pretty()
+
+// #3
+db.stories.aggregate([
+	{$match: {status: {$in: ["popular"]}}},
+	{$unwind: "$shorturl"},
+	{$group: {"_id": "$media", "avg_view_count": {"$avg": "$shorturl.view_count"}}},
+	{$project: { _id: 0, media_type: "$_id", avg_view_count: 1 } },
+]).pretty()
+
+// #4
+db.tweets.aggregate([
+	{$unwind: "$entities"},
+	{$project: { entities: 1 } },
+	{$unwind: "$entities.user_mentions"},
+	{$group: { "_id": "$entities.user_mentions.screen_name", "num_mentions_user": { $sum: 1 } }},
+	{$project: { _id: 0, screen_name: "$_id", num_mentions_user: 1 } },
+	{$sort: { num_mentions_user: -1 } }
+]).pretty()
+
+// #5
+db.movies.aggregate([
+	{$project: { cast: 1, "tomato_rating": "$tomatoes.viewer.rating" } },
+	{$unwind: "$cast"},
+	{$group: { "_id": "$cast", "avg_tomato_rating": { $avg: "$tomato_rating" }}},
+	{$project: { _id: 0, cast_name: "$_id", avg_tomato_rating: 1 } },
+	{$sort: { avg_tomato_rating: -1 } },
+	{$limit : 10 }
+]).pretty()

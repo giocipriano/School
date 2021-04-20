@@ -1,0 +1,53 @@
+MongoDB Crud
+- Abrera, Cipriano, Imperial
+
+wget https://admu-contempo.s3-ap-southeast-1.amazonaws.com/data/mongo_data.zip
+
+unzip sample.zip
+
+mongorestore -h 172.31.86.66 sample/ -d sample
+
+#1 
+
+db.grades.find(
+{scores: {$all:[
+				{"$elemMatch": {"type": "exam", "score": {$gt:75}}}]}}, 
+{"_id": 0}
+).pretty()
+
+#2 
+
+db.inspections.find(
+{result: {$in: ["Pass", "Fail"]}}
+).pretty()
+
+#3
+
+db.stories.find(
+{"topic.name": "Television", "media": "videos"}, {"_id": 0, "href": 0, "shorturl":0}
+).sort({diggs: 1}).pretty()
+
+#4
+
+db.stories.find(
+{"shorturl.view_count": {$gt:1000}}, {"_id": 0, "href": 0, "user":0, "submit_date":0, "description": 0, "link":0}
+).pretty()
+
+#5 
+
+db.inspections.updateMany(
+{"result": "Fail"}, {$set:{"fine_value": 100}}
+)
+
+/tocheck/
+db.inspections.find({"result": "Fail"}).pretty()
+
+#6
+
+db.inspections.updateMany(
+{"address.city": "ROSEDALE"},
+{$inc:{fine_value: 150}}
+)
+
+/tocheck/
+db.inspections.find({"result": "Fail", "address.city": "ROSEDALE"}).pret

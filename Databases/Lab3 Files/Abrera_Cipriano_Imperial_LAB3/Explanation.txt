@@ -1,0 +1,20 @@
+#1 - Filter a user's order by status and by date: 
+
+    For number 1, we used an LSI named user-filter-order-index with its sort key as 'statusDate',
+    which is a new attribute added specificially to have a column with a Status#Date format. The 
+    dates for each shopping was added manually to each item inside the shopping cart, making sure 
+    that all 3 items have the same order date, and which also corresponds to the same date which is 
+    added under the checkout function. The 'statusDate' was added to both add_item and checkout 
+    functions to properly appear in the table. The query consists of the username as the partition
+    key and the status date as the sort key, using the begins_with function.
+
+#2 - Retrieve all pending orders
+
+    For number 2, we used another new attribute definition for 'status' which only specifies the 
+    status of an item, either pending or shippping. A second GSI was added with 'status' as its 
+    partition key and the same sort key, which had all the #ORDER#s within the table. We changed 
+    the 'status' within add_item and checkout to put 'Pending' as a status during add_item, and 
+    as 'Shipping' during checkout. The query was done with a command without any input which uses
+    'status' equals either pending or shipping, and and the sort key which starts with #ORDER#.
+    
+* We used an ISO 8601 format for the date so that DynamoDB can sort it for us :D 
